@@ -268,6 +268,7 @@
             <textarea id="custom_html" style="width: 500px; height:200px"></textarea>
           <br>
          <button id="blob" class="btn btn-primary">Download add-on .zip</button>
+         <div id="j-notice" style="width: 50%"></div>
     </body>
 
     <head>
@@ -284,21 +285,34 @@
             }
 
             // Blob
-            var blobLink = document.getElementById('blob');
-            if (JSZip.support.blob) {
-                function downloadWithBlob() {
-                    try {
-                        var blob = createZip().generate({type:"blob"});
-                        // see FileSaver.js
-                        saveAs(blob, addonName + ".zip");
-                    } catch(e) {
-                        blobLink.innerHTML += " " + e;
-                    }
-                    return false;
+            if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
+                $("#j-notice").html("<br>For Safari browsers, the file will download with a name like <b>Unknown</b>. " +
+                        "You can upload this straightaway to your Jive instance, or rename name the file with a .zip extension to easily view its contents.");
+                // data URI
+                function downloadWithDataURI() {
+                    window.location = "data:application/zip;base64," + createZip().generate({type:"base64"});
                 }
-                bindEvent(blobLink, 'click', downloadWithBlob);
+                var dataUriLink = document.getElementById('blob');
+                bindEvent(dataUriLink, 'click', downloadWithDataURI);
             } else {
-                blobLink.innerHTML += " (not supported on this browser)";
+                // other
+                // safari
+                var blobLink = document.getElementById('blob');
+                if (JSZip.support.blob) {
+                    function downloadWithBlob() {
+                        try {
+                            var blob = createZip().generate({type:"blob"});
+                            // see FileSaver.js
+                            saveAs(blob, addonName + ".zip");
+                        } catch(e) {
+                            blobLink.innerHTML += " " + e;
+                        }
+                        return false;
+                    }
+                    bindEvent(blobLink, 'click', downloadWithBlob);
+                } else {
+                    blobLink.innerHTML += " (not supported on this browser)";
+                }
             }
         </script>
     </head>
