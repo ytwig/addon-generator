@@ -1,0 +1,305 @@
+<html>
+    <head>
+        <style>
+            body {
+                color: #5e5e5e;
+                font: 13px 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+                margin: 50px;
+            }
+
+            .j-card .hidden {
+                display: none;
+            }
+
+            h1, h2 {
+                margin-top: 0;
+                margin-bottom: -5px;
+            }
+
+            ul {
+                margin-left:0px; padding-left:20px; list-style-type:square;
+            }
+
+            .j-textarea {
+                width: 50%;
+                height: 512px;
+            }
+
+            button.j-btn {
+                color: #fff;
+                text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+                border: 1px solid #3169aa;
+                border-color: rgba(46, 106, 182, 0.8);
+                background: #408bd0;
+                background: linear-gradient(to bottom, #62acde 0%, #4a8cca 100%);
+                font-weight: 600;
+            }
+
+            button {
+                color: #3778C7;
+                padding: 7px 16px;
+                text-align: center;
+                border: 1px solid #bbb;
+                border-radius: 3px;
+                background: #fff;
+                background: #fff linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 0%, rgba(0, 0, 0, 0.07) 100%);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.13);
+                cursor: pointer;
+                display: inline-block;
+                line-height: normal;
+                text-shadow: 0 1px 0 white;
+                font-family: inherit;
+                font-size: 14px;
+                font-weight: 500;
+                background-clip: padding-box;
+                margin: 0 10px 0 0;
+                text-decoration: none;
+                outline: none;
+            }
+        </style>
+        <script type="text/javascript" src="http://stuk.github.io/jszip/dist/jszip.js"></script>
+
+        <script type="text/javascript" src="http://stuk.github.io/jszip-utils/dist/jszip-utils.js"></script>
+        <!--
+        Mandatory in IE 6, 7, 8 and 9.
+        -->
+        <!--[if IE]>
+        <script type="text/javascript" src="http://stuk.github.io/jszip-utils/dist/jszip-utils-ie.js"></script>
+        <![endif]-->
+
+        <!--
+        Any version of jQuery will do (it's just to write some examples), this one
+        happens to be available in our tests.
+        -->
+        <script type="text/javascript" src="http://stuk.github.io/jszip/test/jquery-1.8.3.min.js"></script>
+
+        <script type="text/javascript" src="http://stuk.github.io/jszip/vendor/FileSaver.js"></script>
+        <script>
+            var addonName = 'Simple Tile App';
+            function createZip() {
+                var zip = new JSZip();
+
+                    var addonTitle = $('#addon_name').val();
+                    addonName = addonTitle || 'simple-tile-app';
+                    addonName = addonName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+
+                var meta =
+                {
+                    "package_version": "1.0",
+                    "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                    "type": "client-app",
+                    "name": "Add-on containing tiles(s)",
+                    "description": "Tiles: [simple-tile-app]",
+                    "minimum_version": "0080300000",
+                    "icon_16" : "https://community.jivesoftware.com/servlet/JiveServlet/showImage/102-99994-1-1023036/j.png",
+                    "icon_48" : "https://community.jivesoftware.com/servlet/JiveServlet/showImage/102-99994-1-1023036/j.png",
+                    "icon_128" : "https://community.jivesoftware.com/servlet/JiveServlet/showImage/102-99994-1-1023036/j.png",
+                    "released_on": "2014-03-08T19:11:11.234Z",
+                    "service_url": "http://localhost:8090"
+                };
+
+                var definition =
+                {
+                    "integrationUser": {
+                        "systemAdmin": false
+                    },
+                    "tiles": [
+                        {
+                            "displayName": addonName,
+                            "name": addonName,
+                            "description": addonName,
+                            "style": "CUSTOM_VIEW",
+                            "displayWidth": "ALL",
+                            "dataProviderKey": "internal",
+                            "pageTypes": [
+                                "PLACE",
+                                "USER"
+                            ],
+                            "view": "/public/tiles/simple-tile-app/view.html",
+                            "definitionDirName": "simple-tile-app",
+                            "published": "2014-02-28T15:12:16.768-0800",
+                            "updated": "2014-02-28T15:12:16.768-0800"
+                        }
+                    ]
+                };
+
+                var customHTMLsrc = $('#custom_html').val();
+                var customHTML = customHTMLsrc.length > 0 ? '<div>' + customHTMLsrc + '</div>' : '';
+
+                var viewHtml =
+                        '<html>\n\
+                        <head>\n\
+                            <meta http-equiv="Content-Type" value="text/html; charset=utf-8" />\n\
+                            <link rel="stylesheet" type="text/css" href="stylesheets/main.css">\n\
+                                <script src="view.js"><\/script>\n\
+                                <title>Tile App View</title>\n\
+                            </head>\n\
+                            \n\
+                            <body>\n\
+                            <h2>' + addonTitle + '</h2>\n\
+                            <p>Update view.html & view.js to customize tile.</p>\n' + customHTML +
+                            '<p>Read more about custom view tiles <a href="https://community.jivesoftware.com/docs/DOC-141800" target="_blank">here</a>.</p>\n\
+                            <button class="j-btn" id="jbutton">Click Here</button>\n\
+                            </body>\n\
+                        </html>';
+
+                debugger;
+
+                var viewJs =
+                        'jive.tile.onOpen(function(data, options) {\n\
+                        \n\
+                              // Replace this silly JavaScript!...\n\
+                            $("#jbutton").click( function() {\n\
+                              alert("Great work on clicking that button!");\n\
+                            });\n\
+                        \n\
+                            gadgets.window.adjustHeight();\n\
+                        });'
+
+                var stylesheet =
+                        "body {\n\
+                            color: #5e5e5e;\n\
+                            font: 13px 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;\n\
+                        }\n\
+                        \n\
+                        .j-card .hidden {\n\
+                            display: none;\n\
+                        }\n\
+                        \n\
+                        h1, h2 {\n\
+                            margin-top: 0;\n\
+                            margin-bottom: -5px;\n\
+                        }\n\
+                        \n\
+                        ul {\n\
+                            margin-left:0px; padding-left:20px; list-style-type:square;\n\
+                        }\n\
+                        \n\
+                        .j-textarea {\n\
+                            width: 50%;\n\
+                            height: 512px;\n\
+                        }\n\
+                        \n\
+                        button.j-btn {\n\
+                            color: #fff;\n\
+                            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);\n\
+                            border: 1px solid #3169aa;\n\
+                            border-color: rgba(46, 106, 182, 0.8);\n\
+                            background: #408bd0;\n\
+                            background: linear-gradient(to bottom, #62acde 0%, #4a8cca 100%);\n\
+                            font-weight: 600;\n\
+                        }\n\
+                        \n\
+                        button {\n\
+                            color: #3778C7;\n\
+                            padding: 7px 16px;\n\
+                            text-align: center;\n\
+                            border: 1px solid #bbb;\n\
+                            border-radius: 3px;\n\
+                            background: #fff;\n\
+                            background: #fff linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 0%, rgba(0, 0, 0, 0.07) 100%);\n\
+                            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.13);\n\
+                            cursor: pointer;\n\
+                            display: inline-block;\n\
+                            line-height: normal;\n\
+                            text-shadow: 0 1px 0 white;\n\
+                            font-family: inherit;\n\
+                            font-size: 14px;\n\
+                            font-weight: 500;\n\
+                            background-clip: padding-box;\n\
+                            margin: 0 10px 0 0;\n\
+                            text-decoration: none;\n\
+                            outline: none;\n\
+                        }\n\
+                        \n\
+                        input[type = 'text'] {\n\
+                            margin-top: 2px;\n\
+                            border-radius: 4px;\n\
+                            border: 1px solid #bbb;\n\
+                            border-bottom: 1px solid #dadada;\n\
+                            padding: 6px 4px;\n\
+                            transition: all;\n\
+                            -webkit-transition: all .3s linear;\n\
+                            -moz-transition: all .3s linear;\n\
+                            transition: all .3s linear;\n\
+                            width: 100%;\n\
+                            outline: none;\n\
+                            font: 13px 'Helvetica Neue', Arial, Helvetica, sans-serif;\n\
+                            box-sizing: border-box;\n\
+                        }";
+
+                console.log("Creating zip contents...");
+
+                // Generate random UUID and put it in the meta JSON object
+                var guid = (function() {
+                    function s4() {
+                        return Math.floor((1 + Math.random()) * 0x10000)
+                                .toString(16)
+                                .substring(1);
+                    }
+                    return function() {
+                        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                                s4() + '-' + s4() + s4() + s4();
+                    };
+                })();
+                meta["id"] = guid();
+
+                // Create meta and definition JSON files
+                zip.file("definition.json", JSON.stringify(definition,null,4));
+                zip.file("meta.json", JSON.stringify(meta,null,4));
+
+                // Create view.html and view.js
+                zip.folder("public").folder("tiles").folder("simple-tile-app").file("view.html", viewHtml);
+                zip.folder("public").folder("tiles").folder("simple-tile-app").file("view.js", viewJs);
+
+                // Create style sheet
+                zip.folder("public").folder("tiles").folder("simple-tile-app").folder("stylesheets").file("main.css", stylesheet);
+
+                return zip;
+            }
+    </script>
+        
+    </head>
+
+    <body>
+          <p><b>Tile name</b> (optional):</p>
+            <input type="text" style="width: 500px; height:40px" id="addon_name" value="Simple Tile App">
+          <p><b>Paste some custom html here</b> (optional):</p>
+            <textarea id="custom_html" style="width: 500px; height:200px"></textarea>
+          <br>
+         <button id="blob" class="btn btn-primary">Download add-on .zip</button>
+    </body>
+
+    <head>
+        <script>
+            $("#custom_html").focus();
+            function bindEvent(el, eventName, eventHandler) {
+                if (el.addEventListener){
+                    // standard way
+                    el.addEventListener(eventName, eventHandler, false);
+                } else if (el.attachEvent){
+                    // old IE
+                    el.attachEvent('on'+eventName, eventHandler);
+                }
+            }
+
+            // Blob
+            var blobLink = document.getElementById('blob');
+            if (JSZip.support.blob) {
+                function downloadWithBlob() {
+                    try {
+                        var blob = createZip().generate({type:"blob"});
+                        // see FileSaver.js
+                        saveAs(blob, addonName + ".zip");
+                    } catch(e) {
+                        blobLink.innerHTML += " " + e;
+                    }
+                    return false;
+                }
+                bindEvent(blobLink, 'click', downloadWithBlob);
+            } else {
+                blobLink.innerHTML += " (not supported on this browser)";
+            }
+        </script>
+    </head>
+</html>
